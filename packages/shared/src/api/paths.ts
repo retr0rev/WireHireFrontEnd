@@ -21,6 +21,7 @@ export const API_PATHS = {
   adminLogin: '/api/admin/login',
   adminLogout: '/api/admin/logout',
   adminMe: '/api/admin/me',
+  adminMePassword: '/api/admin/me/password',
   adminJobs: '/api/admin/jobs',
   adminJobStatus: (id: number) => `/api/admin/jobs/${id}/status`,
   adminJobDelete: (id: number) => `/api/admin/jobs/${id}`,
