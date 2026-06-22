@@ -1,0 +1,79 @@
+const BASE_URL =
+  (typeof window !== 'undefined'
+    ? (window as any).ENV?.VITE_API_URL
+    : undefined) ??
+  (typeof import.meta !== 'undefined'
+    ? (import.meta as any).env?.VITE_API_URL
+    : undefined) ??
+  'http://localhost:8080'
+
+/**
+ * Lightweight fetch wrapper that:
+ * - Prepends the API base URL
+ * - Sends cookies (httpOnly JWT) via credentials: 'include'
+ * - Lets the backend set/clear the cookie on login/logout
+ * - Throws on non-2xx with parsed error body
+ * - Allows overriding Content-Type for form/multipart
+ */
+export async function apiFetch<T>(
+  path: string,
+  options: RequestInit = {},
+): Promise<T> {
+  const url = `${BASE_URL}${path}`
+
+  const headers: Record<string, string> = {
+    ...(options.headers as Record<string, string>),
+  }
+
+  // Default JSON — let fetch set Content-Type automatically for body-less requests
+  if (!headers['Content-Type'] && options.body) {
+    headers['Content-Type'] = 'application/json'
+  }
+
+  const res = await fetch(url, {
+    ...options,
+    headers,
+    credentials: 'include',
+  })
+
+  if (res.status === 204) {
+    return undefined as T
+  }
+
+  const text = await res.text()
+  let data: T
+  try {
+    data = JSON.parse(text)
+  } catch {
+    throw new ApiFetchError(res.status, text || res.statusText)
+  }
+
+  if (!res.ok) {
+    const errMsg =
+      typeof (data as any)?.error === 'string'
+        ? (data as any).error
+        : `HTTP ${res.status}`
+    throw new ApiFetchError(res.status, errMsg, data)
+  }
+
+  return data
+}
+
+export class ApiFetchError extends Error {
+  status: number
+  body?: unknown
+
+  constructor(status: number, message: string, body?: unknown) {
+    super(message)
+    this.name = 'ApiFetchError'
+    this.status = status
+    this.body = body
+  }
+}
+
+// Augment window for SSR-safe env vars
+declare global {
+  interface Window {
+    ENV?: { VITE_API_URL?: string }
+  }
+}

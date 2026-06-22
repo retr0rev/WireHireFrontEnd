@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["vite/client"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@wirehire/shared": ["../../packages/shared/src"],
+      "@wirehire/shared/*": ["../../packages/shared/src/*"]
+    }
+  },
+  "include": ["src"]
+}

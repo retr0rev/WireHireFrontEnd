@@ -1,0 +1,22 @@
+node_modules
+dist
+.env
+*.local
+.DS_Store
+
+# Build output
+*.tsbuildinfo
+
+# TanStack Router generated files
+
+# Vercel
+.vercel
+
+# pnpm
+
+# Vite cache
+.vite
+
+# Development artifacts
+.omo/
+.codegraph
