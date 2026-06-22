@@ -20,3 +20,4 @@ dist
 # Development artifacts
 .omo/
 .codegraph
+*timestamp*.js
