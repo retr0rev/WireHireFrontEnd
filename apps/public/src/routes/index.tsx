@@ -28,9 +28,12 @@ function HomePage() {
               <Link to="/jobs" className="rounded-[4px] bg-wh-primary px-6 py-3 font-wh-body text-sm font-semibold text-white hover:bg-wh-primary-light transition-colors">
                 Browse Jobs
               </Link>
-              <Link to="/signup" className="rounded-[4px] border border-wh-outline bg-wh-white px-6 py-3 font-wh-body text-sm font-semibold text-wh-primary hover:bg-wh-surface transition-colors">
-                Post a Job
-              </Link>
+              <a
+                href={`${import.meta.env.VITE_EMPLOYER_URL ?? ''}/login`}
+                className="rounded-[4px] border border-wh-outline bg-wh-white px-6 py-3 font-wh-body text-sm font-semibold text-wh-primary hover:bg-wh-surface transition-colors"
+              >
+                Employer Login
+              </a>
             </div>
           </div>
         </div>

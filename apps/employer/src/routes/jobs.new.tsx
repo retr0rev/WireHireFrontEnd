@@ -3,6 +3,7 @@ import { useCreateJob } from '@wirehire/shared'
 import { AuthLayout } from '../components/AuthLayout'
 import { JobForm } from '../components/JobForm'
 import type { CreateJobRequest } from '@wirehire/shared'
+import toast from 'react-hot-toast'
 
 export const Route = createFileRoute('/jobs/new')({
   component: NewJobPage,
@@ -13,8 +14,13 @@ function NewJobPage() {
   const router = useRouter()
 
   const handleSubmit = async (data: CreateJobRequest) => {
-    await createJob.mutateAsync(data)
-    router.navigate({ to: '/' })
+    try {
+      await createJob.mutateAsync(data)
+      toast.success('Job posted — waiting for admin approval')
+      router.navigate({ to: '/' })
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to post job')
+    }
   }
 
   return (

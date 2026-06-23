@@ -18,6 +18,7 @@ export function useAdminJobs() {
   return useQuery({
     queryKey: ['adminJobs'],
     queryFn: () => apiFetch<JobApp[]>(API_PATHS.adminJobs),
+    refetchOnMount: 'always',
   })
 }
 
@@ -52,6 +53,7 @@ export function useAdminEmployers() {
   return useQuery({
     queryKey: ['adminEmployers'],
     queryFn: () => apiFetch<Client[]>(API_PATHS.adminEmployers),
+    refetchOnMount: 'always',
   })
 }
 
@@ -59,6 +61,7 @@ export function usePendingEmployers() {
   return useQuery({
     queryKey: ['pendingEmployers'],
     queryFn: () => apiFetch<Client[]>(API_PATHS.adminEmployersPending),
+    refetchOnMount: 'always',
   })
 }
 

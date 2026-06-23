@@ -17,6 +17,12 @@ export function Navbar() {
           <Link to="/employers" className="font-wh-body text-sm font-medium text-wh-muted hover:text-wh-primary transition-colors">
             Employers
           </Link>
+          <a
+            href={`${import.meta.env.VITE_EMPLOYER_URL ?? ''}/login`}
+            className="font-wh-body text-sm font-medium text-wh-muted hover:text-wh-primary transition-colors"
+          >
+            Login
+          </a>
           <Link to="/signup" className="rounded-[4px] bg-wh-primary px-5 py-2.5 font-wh-body text-sm font-semibold text-white hover:bg-wh-primary-light transition-colors">
             Post a Job
           </Link>

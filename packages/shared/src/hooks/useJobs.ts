@@ -7,6 +7,7 @@ export function useMyJobs() {
   return useQuery({
     queryKey: ['myJobs'],
     queryFn: () => apiFetch<JobApp[]>(API_PATHS.jobs),
+    refetchOnMount: 'always',
   })
 }
 
@@ -27,7 +28,7 @@ export function useCreateJob() {
         body: JSON.stringify(data),
       }),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['myJobs'] })
+      qc.invalidateQueries({ queryKey: ['myJobs'], refetchType: 'active' })
     },
   })
 }
