@@ -12,25 +12,25 @@ function HomePage() {
   return (
     <div>
       <section className="border-b border-wh-outline bg-wh-white">
-        <div className="mx-auto max-w-[1200px] px-4 py-24 lg:px-10 lg:py-32">
+        <div className="mx-auto max-w-[1200px] px-4 py-16 sm:py-24 lg:px-10 lg:py-32">
           <div className="mx-auto max-w-3xl text-center">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-wh-outline bg-wh-surface px-4 py-1.5">
               <span className="h-2 w-2 rounded-full bg-wh-success" />
               <span className="font-wh-mono text-[11px] font-medium text-wh-muted">HIRING NOW</span>
             </div>
-            <h1 className="font-wh-headline text-5xl font-extrabold leading-[1.1] tracking-[-0.02em] text-wh-primary lg:text-6xl">
+            <h1 className="font-wh-headline text-4xl font-extrabold leading-[1.1] tracking-[-0.02em] text-wh-primary sm:text-5xl lg:text-6xl">
               Find Your Next<br />Opportunity
             </h1>
             <p className="mx-auto mt-6 max-w-xl font-wh-body text-lg leading-relaxed text-wh-muted">
               Browse curated listings from verified employers. Your dream role is one click away.
             </p>
-            <div className="mt-10 flex items-center justify-center gap-4">
-              <Link to="/jobs" className="rounded-[4px] bg-wh-primary px-6 py-3 font-wh-body text-sm font-semibold text-white hover:bg-wh-primary-light transition-colors">
+            <div className="mt-10 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-center sm:gap-4">
+              <Link to="/jobs" className="rounded-[4px] bg-wh-primary px-6 py-3 text-center font-wh-body text-sm font-semibold text-white hover:bg-wh-primary-light transition-colors">
                 Browse Jobs
               </Link>
               <a
                 href={`${import.meta.env.VITE_EMPLOYER_URL ?? ''}/login`}
-                className="rounded-[4px] border border-wh-outline bg-wh-white px-6 py-3 font-wh-body text-sm font-semibold text-wh-primary hover:bg-wh-surface transition-colors"
+                className="rounded-[4px] border border-wh-outline bg-wh-white px-6 py-3 text-center font-wh-body text-sm font-semibold text-wh-primary hover:bg-wh-surface transition-colors"
               >
                 Employer Login
               </a>
@@ -39,7 +39,7 @@ function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1200px] px-4 py-16 lg:px-10 lg:py-24">
+      <section className="mx-auto max-w-[1200px] px-4 py-12 sm:py-16 lg:px-10 lg:py-24">
         <div className="mb-10 flex items-center justify-between">
           <div>
             <h2 className="font-wh-headline text-2xl font-bold text-wh-primary">Latest Openings</h2>

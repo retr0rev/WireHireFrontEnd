@@ -22,9 +22,9 @@ function JobsPage() {
   }, [jobs, search, category])
 
   return (
-    <div className="mx-auto max-w-[1200px] px-4 py-16 lg:px-10">
-      <div className="mb-10">
-        <h1 className="font-wh-headline text-3xl font-extrabold text-wh-primary">Browse Jobs</h1>
+    <div className="mx-auto max-w-[1200px] px-4 py-12 sm:py-16 lg:px-10">
+      <div className="mb-8 sm:mb-10">
+        <h1 className="font-wh-headline text-2xl font-extrabold text-wh-primary sm:text-3xl">Browse Jobs</h1>
         <p className="mt-1 font-wh-body text-wh-muted">Search across all verified listings</p>
       </div>
 

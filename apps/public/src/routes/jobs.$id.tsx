@@ -32,17 +32,17 @@ function JobDetailPage() {
   )
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-16 lg:px-10">
-      <Link to="/jobs" className="mb-8 inline-block font-wh-body text-sm font-medium text-wh-muted hover:text-wh-primary">&larr; Back to jobs</Link>
+    <div className="mx-auto max-w-3xl px-4 py-10 sm:py-16 lg:px-10">
+      <Link to="/jobs" className="mb-6 inline-block font-wh-body text-sm font-medium text-wh-muted hover:text-wh-primary sm:mb-8">&larr; Back to jobs</Link>
 
-      <div className="rounded-wh-card border border-wh-outline bg-wh-white p-8 lg:p-10">
+      <div className="rounded-wh-card border border-wh-outline bg-wh-white p-5 sm:p-8 lg:p-10">
         <div className="mb-8">
           {job.company_logo_url ? (
             <img src={job.company_logo_url} alt={job.company_name} className="mb-4 h-14 w-14 rounded-wh-card object-cover" />
           ) : (
             <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-wh-card bg-wh-primary text-xl font-bold text-white">{job.company_name.charAt(0)}</div>
           )}
-          <h1 className="font-wh-headline text-3xl font-extrabold leading-tight text-wh-primary lg:text-4xl">{job.job_title}</h1>
+          <h1 className="font-wh-headline text-2xl font-extrabold leading-tight text-wh-primary sm:text-3xl lg:text-4xl">{job.job_title}</h1>
           <div className="mt-3 flex flex-wrap items-center gap-3">
             <span className="font-wh-body text-sm font-semibold text-wh-onsurface">{job.company_name}</span>
             <span className="font-wh-mono text-xs text-wh-muted">{job.location}</span>
@@ -55,7 +55,7 @@ function JobDetailPage() {
           <p className="font-wh-body leading-relaxed text-wh-muted whitespace-pre-wrap">{job.description}</p>
         </div>
 
-        <div className="rounded-wh-card border border-wh-outline bg-wh-surface p-6">
+        <div className="rounded-wh-card border border-wh-outline bg-wh-surface p-5 sm:p-6">
           <h2 className="mb-4 font-wh-headline text-lg font-bold text-wh-primary">Contact Information</h2>
           <div className="space-y-3 font-wh-body text-sm">
             <div className="flex items-center gap-2">

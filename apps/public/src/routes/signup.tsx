@@ -34,9 +34,9 @@ function SignupPage() {
   )
 
   return (
-    <div className="mx-auto max-w-lg px-4 py-16 lg:py-24">
-      <div className="mb-8">
-        <h1 className="font-wh-headline text-3xl font-extrabold text-wh-primary">Employer Sign Up</h1>
+    <div className="mx-auto max-w-lg px-4 py-12 sm:py-16 lg:py-24">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="font-wh-headline text-3xl font-extrabold text-wh-primary sm:text-3xl">Employer Sign Up</h1>
         <p className="mt-1 font-wh-body text-wh-muted">Create an account to post jobs on WireHire</p>
       </div>
 
