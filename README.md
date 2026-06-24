@@ -1,6 +1,6 @@
 # WireHire Frontend
 
-Monorepo with three standalone Vite + React apps serving the WireHire job board platform.
+Monorepo with two standalone Vite + React apps serving the WireHire job board platform.
 
 ## Stack
 
@@ -14,8 +14,7 @@ Monorepo with three standalone Vite + React apps serving the WireHire job board 
 | App | Port | Dev URL | Type |
 |---|---|---|---|
 | `@wirehire/public` | 5173 | public.wirehire.com | Public job board |
-| `@wirehire/employer` | 5174 | employer.wirehire.com | Employer dashboard |
-| `@wirehire/admin` | 5175 | admin.wirehire.com | Admin moderation panel |
+| `@wirehire/dashboard` | 5174 | employer.wirehire.com | Unified employer + admin dashboard (RBAC) |
 | `@wirehire/shared` | — | — | Shared types, hooks, API client |
 
 ## Quick Start
@@ -23,10 +22,9 @@ Monorepo with three standalone Vite + React apps serving the WireHire job board 
 ```bash
 pnpm install
 
-# Start all 3 frontends
-pnpm --filter @wirehire/public dev
-pnpm --filter @wirehire/employer dev
-pnpm --filter @wirehire/admin dev
+# Start all frontends
+pnpm dev:public
+pnpm dev:dashboard
 
 # Build all
 pnpm -r build
@@ -44,12 +42,11 @@ packages/shared/src/
   types/          — JobApp, Client, Admin, API request/response types
   api/            — apiFetch client (credentials: 'include'), endpoint paths
   hooks/          — TanStack Query hooks (usePublicJobs, useMyJobs, useAdminJobs, etc.)
-  auth/           — EmployerAuthProvider, AdminAuthProvider (cookie-based auth)
+  auth/           — UnifiedAuthProvider (role-aware cookie-based auth)
   constants/      — Job categories
 
 apps/public/       — Public job board (CSR)
-apps/employer/     — Employer dashboard (CSR)
-apps/admin/        — Admin dashboard (CSR)
+apps/employer/     — Unified employer + admin dashboard with RBAC (CSR)
 ```
 
 ## Auth Flow
@@ -57,8 +54,9 @@ apps/admin/        — Admin dashboard (CSR)
 1. User logs in → backend sets httpOnly `token` cookie
 2. Frontend calls `/api/auth/me` with `credentials: 'include'`
 3. Cookie sent automatically on every API request
-4. Auth provider checks on mount and on login/logout
+4. Auth provider checks on mount (probes both employer and admin endpoints in parallel) and on login/logout
 5. AuthLayout guards redirect unauthenticated users to `/login`
+6. Admin routes under `/admin/*` with role-based access control
 
 No tokens are stored in JavaScript or localStorage.
 
@@ -67,16 +65,15 @@ No tokens are stored in JavaScript or localStorage.
 | Variable | Required | Default | Description |
 |---|---|---|---|
 | `VITE_API_URL` | — | `http://localhost:8080` | Backend API URL |
-| `VITE_EMPLOYER_URL` | — | `http://localhost:5174` | URL of the employer dashboard app (for cross-app login links) |
+| `VITE_EMPLOYER_URL` | — | `http://localhost:5174` | URL of the dashboard app (for cross-app login links) |
 
 Set per-app in Vercel dashboard (or `.env` for local dev).
 
 ## Deployment (Vercel)
 
-Create 3 separate Vercel projects from the same repo. For each:
+Create 2 separate Vercel projects from the same repo:
 
-1. **Root Directory**: `apps/public`, `apps/employer`, or `apps/admin`
-2. **Build Command**: Auto-detected from `vercel.json`
-3. **Environment Variable**: `VITE_API_URL` = your Railway backend URL
+1. **Root Directory**: `apps/public` → public job board
+2. **Root Directory**: `apps/employer` → unified dashboard (employer + admin)
 
 Each `vercel.json` handles the monorepo install + build correctly.

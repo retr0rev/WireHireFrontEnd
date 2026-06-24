@@ -3,11 +3,9 @@
   "private": true,
   "scripts": {
     "dev:public": "pnpm --filter @wirehire/public dev",
-    "dev:employer": "pnpm --filter @wirehire/employer dev",
-    "dev:admin": "pnpm --filter @wirehire/admin dev",
+    "dev:dashboard": "pnpm --filter @wirehire/dashboard dev",
     "build:public": "pnpm --filter @wirehire/public build",
-    "build:employer": "pnpm --filter @wirehire/employer build",
-    "build:admin": "pnpm --filter @wirehire/admin build",
+    "build:dashboard": "pnpm --filter @wirehire/dashboard build",
     "build": "pnpm -r build",
     "lint": "pnpm -r lint",
     "typecheck": "pnpm -r typecheck"

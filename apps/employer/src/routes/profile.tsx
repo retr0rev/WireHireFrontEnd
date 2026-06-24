@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import { useState } from 'react'
-import { useEmployerAuth, apiFetch, API_PATHS, ImageUpload } from '@wirehire/shared'
+import { useUnifiedAuth, apiFetch, API_PATHS, ImageUpload } from '@wirehire/shared'
 import type { Client } from '@wirehire/shared'
 import { AuthLayout } from '../components/AuthLayout'
 
@@ -13,7 +13,7 @@ export const Route = createFileRoute('/profile')({
 })
 
 function ProfilePage() {
-  const { user } = useEmployerAuth()
+  const { user } = useUnifiedAuth()
   const [form, setForm] = useState({
     company_name: user?.company_name ?? '',
     company_website: user?.company_website ?? '',
