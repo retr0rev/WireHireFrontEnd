@@ -1,10 +1,10 @@
 import { createRootRouteWithContext, Link, Outlet } from '@tanstack/react-router'
 import type { QueryClient } from '@tanstack/react-query'
-import type { useEmployerAuth } from '@wirehire/shared'
+import type { useUnifiedAuth } from '@wirehire/shared'
 
 interface RouterContext {
   queryClient: QueryClient
-  auth: ReturnType<typeof useEmployerAuth>
+  auth: ReturnType<typeof useUnifiedAuth>
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({

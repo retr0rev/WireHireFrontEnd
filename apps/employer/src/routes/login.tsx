@@ -1,14 +1,17 @@
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useState } from 'react'
-import { useEmployerAuth } from '@wirehire/shared'
+import { useUnifiedAuth } from '@wirehire/shared'
+
+type Tab = 'employer' | 'admin'
 
 export const Route = createFileRoute('/login')({
   component: LoginPage,
 })
 
 function LoginPage() {
-  const { login } = useEmployerAuth()
+  const { loginAsEmployer, loginAsAdmin } = useUnifiedAuth()
   const router = useRouter()
+  const [tab, setTab] = useState<Tab>('employer')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -19,8 +22,13 @@ function LoginPage() {
     setLoading(true)
     setError('')
     try {
-      await login(email, password)
-      router.navigate({ to: '/' })
+      if (tab === 'employer') {
+        await loginAsEmployer(email, password)
+        router.navigate({ to: '/' })
+      } else {
+        await loginAsAdmin(email, password)
+        router.navigate({ to: '/admin' })
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed')
     } finally {
@@ -31,7 +39,32 @@ function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50">
       <div className="w-full max-w-sm rounded-xl border border-gray-200 bg-white p-8">
-        <h1 className="mb-6 text-2xl font-bold text-gray-900">Employer Login</h1>
+        <h1 className="mb-6 text-2xl font-bold text-gray-900">Login</h1>
+
+        {/* Tabs */}
+        <div className="mb-6 flex rounded-lg border border-gray-200 p-1">
+          <button
+            onClick={() => { setTab('employer'); setError('') }}
+            className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+              tab === 'employer'
+                ? 'bg-gray-900 text-white'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            Employer
+          </button>
+          <button
+            onClick={() => { setTab('admin'); setError('') }}
+            className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+              tab === 'admin'
+                ? 'bg-gray-900 text-white'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            Admin
+          </button>
+        </div>
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700">Email</label>
@@ -59,7 +92,7 @@ function LoginPage() {
             disabled={loading}
             className="w-full rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50"
           >
-            {loading ? 'Logging in...' : 'Login'}
+            {loading ? 'Logging in...' : `Login as ${tab === 'employer' ? 'Employer' : 'Admin'}`}
           </button>
         </form>
       </div>
