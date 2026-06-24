@@ -36,6 +36,16 @@ function JobDetailPage() {
       <Link to="/jobs" className="mb-6 inline-block font-wh-body text-sm font-medium text-wh-muted hover:text-wh-primary sm:mb-8">&larr; Back to jobs</Link>
 
       <div className="rounded-wh-card border border-wh-outline bg-wh-white p-5 sm:p-8 lg:p-10">
+        {job.banner_image_url && (
+          <div className="mb-6 -mx-5 -mt-5 sm:-mx-8 sm:-mt-8 lg:-mx-10 lg:-mt-10 overflow-hidden rounded-t-wh-card">
+            <img
+              src={job.banner_image_url}
+              alt={`${job.company_name} banner`}
+              className="h-48 w-full object-cover sm:h-64"
+              onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
+            />
+          </div>
+        )}
         <div className="mb-8">
           {job.company_logo_url ? (
             <img src={job.company_logo_url} alt={job.company_name} className="mb-4 h-14 w-14 rounded-wh-card object-cover" />

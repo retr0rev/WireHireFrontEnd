@@ -51,14 +51,32 @@ function DashboardPage() {
               key={job.id}
               className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-5"
             >
-              <div className="flex-1">
-                <div className="mb-1 flex items-center gap-3">
-                  <h2 className="font-semibold text-gray-900">{job.job_title}</h2>
-                  <StatusBadge status={job.status} />
+              <div className="flex items-start gap-4 flex-1">
+                {job.banner_image_url && (
+                  <img
+                    src={job.banner_image_url}
+                    alt="Banner"
+                    className="mt-0.5 h-12 w-20 shrink-0 rounded-lg object-cover"
+                    onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
+                  />
+                )}
+                <div className="flex-1 min-w-0">
+                  <div className="mb-1 flex items-center gap-3">
+                    {job.company_logo_url && (
+                      <img
+                        src={job.company_logo_url}
+                        alt="Logo"
+                        className="h-6 w-6 shrink-0 rounded object-cover"
+                        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
+                      />
+                    )}
+                    <h2 className="font-semibold text-gray-900 truncate">{job.job_title}</h2>
+                    <StatusBadge status={job.status} />
+                  </div>
+                  <p className="text-sm text-gray-500">
+                    {job.category} &middot; {job.location}
+                  </p>
                 </div>
-                <p className="text-sm text-gray-500">
-                  {job.category} &middot; {job.location}
-                </p>
               </div>
               <div className="flex items-center gap-2">
                 <Link
