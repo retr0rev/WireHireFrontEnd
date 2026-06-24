@@ -1,10 +1,16 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link, redirect } from '@tanstack/react-router'
 import { useState } from 'react'
 import { useAdminJobs, usePendingEmployers, useAdminList, useAdminAuth, apiFetch, API_PATHS } from '@wirehire/shared'
 import { AuthLayout } from '../components/AuthLayout'
 import toast from 'react-hot-toast'
 
-export const Route = createFileRoute('/')({ component: DashboardPage })
+export const Route = createFileRoute('/')({
+  component: DashboardPage,
+  beforeLoad: ({ context, location }) => {
+    void location
+    if (!context.auth.admin) throw redirect({ to: '/login' })
+  },
+})
 
 function DashboardPage() {
   const { admin } = useAdminAuth()

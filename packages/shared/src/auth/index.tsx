@@ -88,12 +88,14 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const login = useCallback(async (email: string, password: string) => {
-    const res = await apiFetch<Admin>(
+    await apiFetch<Admin>(
       API_PATHS.adminLogin,
       { method: 'POST', body: JSON.stringify({ email, password }) },
     )
-    setAdmin(res)
-    return res
+    // Fetch the full profile after login — cookie is now set
+    const profile = await apiFetch<Admin>(API_PATHS.adminMe)
+    setAdmin(profile)
+    return profile
   }, [])
 
   const logout = useCallback(async () => {

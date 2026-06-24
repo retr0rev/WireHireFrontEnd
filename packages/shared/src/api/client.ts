@@ -1,10 +1,6 @@
 const BASE_URL =
-  (typeof window !== 'undefined'
-    ? (window as any).ENV?.VITE_API_URL
-    : undefined) ??
-  (typeof import.meta !== 'undefined'
-    ? (import.meta as any).env?.VITE_API_URL
-    : undefined) ??
+  window.ENV?.VITE_API_URL ??
+  import.meta.env.VITE_API_URL ??
   'http://localhost:8080'
 
 /**

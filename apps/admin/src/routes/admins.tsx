@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import { useState } from 'react'
 import { useAdminList, useCreateAdmin } from '@wirehire/shared'
 import type { AdminRole } from '@wirehire/shared'
@@ -8,6 +8,10 @@ import toast from 'react-hot-toast'
 
 export const Route = createFileRoute('/admins')({
   component: AdminsPage,
+  beforeLoad: ({ context, location }) => {
+    void location
+    if (!context.auth.admin) throw redirect({ to: '/login' })
+  },
 })
 
 function AdminsPage() {
@@ -30,11 +34,11 @@ function AdminsPage() {
 
   return (
     <AuthLayout>
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold text-gray-900">Admins</h1>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
+          className="shrink-0 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
         >
           {showForm ? 'Cancel' : '+ Add Admin'}
         </button>
@@ -97,28 +101,45 @@ function AdminsPage() {
           <p className="text-gray-500">No admins.</p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
-          <table className="w-full text-left text-sm">
-            <thead className="border-b border-gray-200 bg-gray-50">
-              <tr>
-                <th className="px-4 py-3 font-medium text-gray-600">Email</th>
-                <th className="px-4 py-3 font-medium text-gray-600">Role</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {admins.map((admin) => (
-                <tr key={admin.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 font-medium text-gray-900">{admin.email}</td>
-                  <td className="px-4 py-3">
-                    <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600">
-                      {admin.admin_role}
-                    </span>
-                  </td>
+        <>
+          {/* Mobile cards */}
+          <div className="space-y-3 md:hidden">
+            {admins.map((admin) => (
+              <div key={admin.id} className="rounded-xl border border-gray-200 bg-white p-4">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="truncate font-medium text-gray-900">{admin.email}</p>
+                  <span className="shrink-0 rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600">
+                    {admin.admin_role}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop table */}
+          <div className="hidden overflow-hidden rounded-xl border border-gray-200 bg-white md:block">
+            <table className="w-full text-left text-sm">
+              <thead className="border-b border-gray-200 bg-gray-50">
+                <tr>
+                  <th className="px-4 py-3 font-medium text-gray-600">Email</th>
+                  <th className="px-4 py-3 font-medium text-gray-600">Role</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {admins.map((admin) => (
+                  <tr key={admin.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3 font-medium text-gray-900">{admin.email}</td>
+                    <td className="px-4 py-3">
+                      <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600">
+                        {admin.admin_role}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
     </AuthLayout>
   )

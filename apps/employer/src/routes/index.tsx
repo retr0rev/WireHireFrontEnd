@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link, redirect } from '@tanstack/react-router'
 import { useMyJobs, useDeleteJob } from '@wirehire/shared'
 import { AuthLayout } from '../components/AuthLayout'
 import { StatusBadge } from '../components/StatusBadge'
@@ -7,6 +7,10 @@ import toast from 'react-hot-toast'
 
 export const Route = createFileRoute('/')({
   component: DashboardPage,
+  beforeLoad: ({ context, location }) => {
+    void location
+    if (!context.auth.user) throw redirect({ to: '/login' })
+  },
 })
 
 function DashboardPage() {

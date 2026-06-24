@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import { usePendingEmployers, useVerifyEmployer, useDeleteEmployer } from '@wirehire/shared'
 import { AuthLayout } from '../components/AuthLayout'
 import { TableSkeleton } from '../components/Skeleton'
@@ -6,6 +6,10 @@ import toast from 'react-hot-toast'
 
 export const Route = createFileRoute('/pending')({
   component: PendingPage,
+  beforeLoad: ({ context, location }) => {
+    void location
+    if (!context.auth.admin) throw redirect({ to: '/login' })
+  },
 })
 
 function PendingPage() {

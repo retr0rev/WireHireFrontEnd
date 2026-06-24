@@ -1,6 +1,13 @@
-import { createRootRoute, Link, Outlet } from '@tanstack/react-router'
+import { createRootRouteWithContext, Link, Outlet } from '@tanstack/react-router'
+import type { QueryClient } from '@tanstack/react-query'
+import type { useEmployerAuth } from '@wirehire/shared'
 
-export const Route = createRootRoute({
+interface RouterContext {
+  queryClient: QueryClient
+  auth: ReturnType<typeof useEmployerAuth>
+}
+
+export const Route = createRootRouteWithContext<RouterContext>()({
   component: () => (
     <div className="min-h-screen bg-gray-50">
       <Outlet />

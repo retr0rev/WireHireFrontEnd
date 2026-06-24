@@ -1,4 +1,4 @@
-import { createFileRoute, useRouter } from '@tanstack/react-router'
+import { createFileRoute, useRouter, redirect } from '@tanstack/react-router'
 import { useCreateJob } from '@wirehire/shared'
 import { AuthLayout } from '../components/AuthLayout'
 import { JobForm } from '../components/JobForm'
@@ -7,6 +7,10 @@ import toast from 'react-hot-toast'
 
 export const Route = createFileRoute('/jobs/new')({
   component: NewJobPage,
+  beforeLoad: ({ context, location }) => {
+    void location
+    if (!context.auth.user) throw redirect({ to: '/login' })
+  },
 })
 
 function NewJobPage() {

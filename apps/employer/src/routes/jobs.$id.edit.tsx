@@ -1,4 +1,4 @@
-import { createFileRoute, useRouter } from '@tanstack/react-router'
+import { createFileRoute, useRouter, redirect } from '@tanstack/react-router'
 import { useMyJob, useUpdateJob } from '@wirehire/shared'
 import { Skeleton } from '../components/Skeleton'
 import { AuthLayout } from '../components/AuthLayout'
@@ -7,6 +7,10 @@ import type { CreateJobRequest } from '@wirehire/shared'
 
 export const Route = createFileRoute('/jobs/$id/edit')({
   component: EditJobPage,
+  beforeLoad: ({ context, location }) => {
+    void location
+    if (!context.auth.user) throw redirect({ to: '/login' })
+  },
 })
 
 function EditJobPage() {

@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import { useState } from 'react'
 import { useEmployerAuth, apiFetch, API_PATHS } from '@wirehire/shared'
 import type { Client } from '@wirehire/shared'
@@ -6,6 +6,10 @@ import { AuthLayout } from '../components/AuthLayout'
 
 export const Route = createFileRoute('/profile')({
   component: ProfilePage,
+  beforeLoad: ({ context, location }) => {
+    void location
+    if (!context.auth.user) throw redirect({ to: '/login' })
+  },
 })
 
 function ProfilePage() {

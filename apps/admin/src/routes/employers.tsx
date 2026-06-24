@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import { useState, useMemo } from 'react'
 import {
   useAdminEmployers,
@@ -14,6 +14,10 @@ import toast from 'react-hot-toast'
 
 export const Route = createFileRoute('/employers')({
   component: EmployersPage,
+  beforeLoad: ({ context, location }) => {
+    void location
+    if (!context.auth.admin) throw redirect({ to: '/login' })
+  },
 })
 
 function EmployersPage() {
@@ -59,7 +63,7 @@ function EmployersPage() {
 
   return (
     <AuthLayout>
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Employers</h1>
           <p className="mt-1 text-sm text-gray-500">
@@ -68,7 +72,7 @@ function EmployersPage() {
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
+          className="shrink-0 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
         >
           {showForm ? 'Cancel' : '+ Add Employer'}
         </button>
@@ -77,7 +81,7 @@ function EmployersPage() {
       {showForm && (
         <form onSubmit={handleCreate} className="mb-6 rounded-xl border border-gray-200 bg-white p-6">
           <h2 className="mb-4 text-lg font-semibold text-gray-900">Create Employer Account</h2>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
               <label className="mb-1 block text-sm font-medium text-gray-700">Company Name *</label>
               <input required value={form.company_name} onChange={(e) => setForm({ ...form, company_name: e.target.value })} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none" />
@@ -187,7 +191,7 @@ function EmployerCard({
   if (isEditing) {
     return (
       <div className="rounded-xl border border-blue-200 bg-blue-50/30 p-6">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <label className="mb-1 block text-xs font-medium text-gray-500">Company Name</label>
             <input value={editForm.company_name} onChange={(e) => setEditForm({ ...editForm, company_name: e.target.value })} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none" />
@@ -227,27 +231,29 @@ function EmployerCard({
   }
 
   return (
-    <div className="flex items-start justify-between rounded-xl border border-gray-200 bg-white p-5">
-      <div className="flex items-start gap-4">
-        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-green-100 text-lg font-bold text-green-700">
-          {employer.company_name.charAt(0)}
-        </div>
-        <div>
-          <h3 className="font-semibold text-gray-900">{employer.company_name}</h3>
-          <div className="mt-1.5 flex flex-wrap gap-x-6 gap-y-1 text-sm text-gray-500">
-            <span>{employer.email}</span>
-            {employer.phone_number && <span>{employer.phone_number}</span>}
-            {employer.company_website && <span className="text-blue-600">{employer.company_website}</span>}
+    <div className="rounded-xl border border-gray-200 bg-white p-5">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex items-start gap-4">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-green-100 text-lg font-bold text-green-700">
+            {employer.company_name.charAt(0)}
+          </div>
+          <div className="min-w-0">
+            <h3 className="font-semibold text-gray-900">{employer.company_name}</h3>
+            <div className="mt-1.5 flex flex-col gap-1 text-sm text-gray-500 sm:flex-row sm:flex-wrap sm:gap-x-6 sm:gap-y-1">
+              <span className="truncate">{employer.email}</span>
+              {employer.phone_number && <span>{employer.phone_number}</span>}
+              {employer.company_website && <span className="truncate text-blue-600">{employer.company_website}</span>}
+            </div>
           </div>
         </div>
-      </div>
-      <div className="flex gap-2">
-        <button onClick={onEdit} className="rounded-lg px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100">
-          Edit
-        </button>
-        <button onClick={onDelete} className="rounded-lg px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50">
-          Delete
-        </button>
+        <div className="flex shrink-0 gap-2">
+          <button onClick={onEdit} className="rounded-lg px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100">
+            Edit
+          </button>
+          <button onClick={onDelete} className="rounded-lg px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50">
+            Delete
+          </button>
+        </div>
       </div>
     </div>
   )

@@ -1,11 +1,11 @@
-import { Link, useRouter } from '@tanstack/react-router'
+import { Link, useNavigate } from '@tanstack/react-router'
 import { useAdminAuth, apiFetch, API_PATHS } from '@wirehire/shared'
 import { useState } from 'react'
 import { Skeleton } from './Skeleton'
 
 export function AuthLayout({ children }: { children: React.ReactNode }) {
   const { admin, isLoading } = useAdminAuth()
-  const router = useRouter()
+  const navigate = useNavigate()
   const [mobileOpen, setMobileOpen] = useState(false)
 
   if (isLoading) {
@@ -17,7 +17,6 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
   }
 
   if (!admin) {
-    router.navigate({ to: '/login' })
     return null
   }
 
@@ -25,7 +24,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
 
   const handleLogout = async () => {
     await apiFetch(API_PATHS.adminLogout, { method: 'POST' })
-    router.navigate({ to: '/login' })
+    navigate({ to: '/login' })
   }
 
   return (

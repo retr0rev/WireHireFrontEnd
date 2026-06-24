@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
+import { useSignup } from '@wirehire/shared'
 
 export const Route = createFileRoute('/signup')({ component: SignupPage })
 
@@ -7,6 +8,7 @@ function SignupPage() {
   const [form, setForm] = useState({ email: '', password: '', company_name: '', phone: '', company_website: '', company_bio: '' })
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
+  const signup = useSignup()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
@@ -14,13 +16,10 @@ function SignupPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); setStatus('loading'); setErrorMsg('')
-    try {
-      const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080'
-      const res = await fetch(`${baseUrl}/api/auth/signup`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Signup failed')
-      setStatus('success')
-    } catch (err) { setStatus('error'); setErrorMsg(err instanceof Error ? err.message : 'Something went wrong') }
+    signup.mutate(form, {
+      onSuccess: () => setStatus('success'),
+      onError: (err) => { setStatus('error'); setErrorMsg(err.message) },
+    })
   }
 
   if (status === 'success') return (
@@ -66,8 +65,8 @@ function SignupPage() {
           <textarea name="company_bio" rows={3} value={form.company_bio} onChange={handleChange} className="w-full rounded-[4px] border border-wh-outline bg-wh-white px-4 py-2.5 font-wh-body text-sm text-wh-onsurface placeholder:text-wh-muted focus:border-wh-secondary focus:ring-2 focus:ring-wh-secondary/20 focus:outline-none" />
         </div>
         {status === 'error' && <p className="font-wh-body text-sm text-wh-danger">{errorMsg}</p>}
-        <button type="submit" disabled={status === 'loading'} className="w-full rounded-[4px] bg-wh-primary px-6 py-3 font-wh-body text-sm font-semibold text-white hover:bg-wh-primary-light disabled:opacity-50 transition-colors">
-          {status === 'loading' ? 'Creating account...' : 'Create Account'}
+        <button type="submit" disabled={signup.isPending} className="w-full rounded-[4px] bg-wh-primary px-6 py-3 font-wh-body text-sm font-semibold text-white hover:bg-wh-primary-light disabled:opacity-50 transition-colors">
+          {signup.isPending ? 'Creating account...' : 'Create Account'}
         </button>
       </form>
     </div>
