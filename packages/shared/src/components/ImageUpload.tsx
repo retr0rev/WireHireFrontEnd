@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import { apiFetch } from '../api/client'
 import { API_PATHS } from '../api/paths'
+import { getCookie } from '../api/client'
 
 interface UploadURLResponse {
   upload_url: string
@@ -50,11 +51,18 @@ export function ImageUpload({ type, currentUrl, onUpload, label }: ImageUploadPr
         body: JSON.stringify({ type, content_type: file.type, ext }),
       })
 
-      // PUT file directly to R2.
+      // PUT file directly to upload endpoint (R2 or local).
+      // Include X-CSRF-Token header for local upload endpoint (protected by CSRF middleware).
+      const csrfToken = getCookie('csrf')
+      const putHeaders: Record<string, string> = { 'Content-Type': file.type }
+      if (csrfToken) {
+        putHeaders['X-CSRF-Token'] = csrfToken
+      }
+
       const putRes = await fetch(res.upload_url, {
         method: 'PUT',
         body: file,
-        headers: { 'Content-Type': file.type },
+        headers: putHeaders,
       })
 
       if (!putRes.ok) {
