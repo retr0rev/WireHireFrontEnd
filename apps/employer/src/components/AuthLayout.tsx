@@ -8,7 +8,13 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate()
   const [mobileOpen, setMobileOpen] = useState(false)
 
-  if (isLoading) {
+  console.log('[AuthLayout] state:', { role, isLoading, user: !!user, admin: !!admin })
+
+  // Show skeleton ONLY during initial probe when NOT yet authenticated.
+  // Once user/admin is set (via login()), render immediately even if
+  // isLoading is still true (waiting for probe 401s to timeout).
+  if (isLoading && !user && !admin) {
+    console.log('[AuthLayout] showing skeleton')
     return (
       <div className="flex h-screen items-center justify-center">
         <Skeleton className="h-8 w-48" />

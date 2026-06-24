@@ -7,7 +7,7 @@ export const Route = createFileRoute('/login')({
 })
 
 function LoginPage() {
-  const { login, user, admin, isLoading } = useUnifiedAuth()
+  const { login, user, admin } = useUnifiedAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')

@@ -48,28 +48,59 @@ export function UnifiedAuthProvider({ children }: { children: React.ReactNode })
   const [isLoading, setIsLoading] = useState(true)
   const cancelled = useRef(false)
 
-  // On mount, probe both endpoints in parallel.
+  // On mount, probe both endpoints in parallel. Complete as soon as one
+  // succeeds. If both fail (or timeout), isLoading becomes false.
   useEffect(() => {
+    console.log('[Probe] useEffect started')
+    cancelled.current = false  // Reset for React StrictMode double-invoke
     const controller = new AbortController()
     const timeout = setTimeout(() => controller.abort(), PROBE_TIMEOUT)
 
-    Promise.allSettled([
-      apiFetch<Client>(API_PATHS.authMe, { signal: controller.signal }),
-      apiFetch<Admin>(API_PATHS.adminMe, { signal: controller.signal }),
-    ]).then(([employerRes, adminRes]) => {
-      clearTimeout(timeout)
-      if (cancelled.current) return
+    let resolved = false
 
-      if (adminRes.status === 'fulfilled') {
-        // Admin takes priority if both succeed (edge case).
-        setRole('admin')
-        setAdmin(adminRes.value)
-      } else if (employerRes.status === 'fulfilled') {
+    const checkAndSet = (role: 'employer' | 'admin', user: Client | Admin) => {
+      console.log('[Probe] checkAndSet called', { role, resolved, cancelled: cancelled.current })
+      if (resolved || cancelled.current) return
+      resolved = true
+      clearTimeout(timeout)
+      if (role === 'employer') {
         setRole('employer')
-        setUser(employerRes.value)
+        setUser(user as Client)
+        setAdmin(null)
+      } else {
+        setRole('admin')
+        setAdmin(user as Admin)
+        setUser(null)
       }
-      // Both failed → role stays null, user/admin stay null.
       setIsLoading(false)
+      console.log('[Probe] setIsLoading(false) called')
+    }
+
+    const employerPromise = apiFetch<Client>(API_PATHS.authMe, { signal: controller.signal })
+      .then((result) => {
+        console.log('[Probe] employer then')
+        checkAndSet('employer', result)
+      })
+      .catch((err) => {
+        console.log('[Probe] employer catch:', err?.message ?? err)
+      })
+
+    const adminPromise = apiFetch<Admin>(API_PATHS.adminMe, { signal: controller.signal })
+      .then((result) => {
+        console.log('[Probe] admin then')
+        checkAndSet('admin', result)
+      })
+      .catch((err) => {
+        console.log('[Probe] admin catch:', err?.message ?? err)
+      })
+      .catch(() => {})
+
+    // Wait for both to complete, then if neither succeeded, mark as done
+    Promise.allSettled([employerPromise, adminPromise]).then(() => {
+      if (!resolved && !cancelled.current) {
+        clearTimeout(timeout)
+        setIsLoading(false)
+      }
     })
 
     return () => {
