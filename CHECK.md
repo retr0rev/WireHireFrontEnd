@@ -43,7 +43,7 @@ Status: ✅ Complete
 - [x] Root `package.json` with build/dev scripts
 - [x] `tsconfig.base.json` — strict
 - [x] `.gitignore`
-- [x] `apps/public/` — TanStack Start scaffold
+- [x] `apps/public/` — Vite + React + TanStack Router scaffold (CSR)
 - [x] `apps/employer/` — Vite + React + TanStack Router scaffold
 - [x] `apps/admin/` — Vite + React + TanStack Router scaffold
 - [x] `packages/shared/` — `@wirehire/shared` scaffold
@@ -77,7 +77,7 @@ Status: ✅ Complete
 
 ---
 
-## Phase 3: App 1 — Public Job Board (SSR)
+## Phase 3: App 1 — Public Job Board (CSR)
 
 Status: ✅ Complete
 
@@ -93,10 +93,10 @@ Status: ✅ Complete
 - [x] `Navbar` — site navigation
 - [x] `Footer`
 
-### SSR Details
-- [x] Meta tags per page via `head()` function
-- [x] TanStack Query for CSR client-side search/filter
+### CSR Details
+- [x] TanStack Query for client-side search/filter
 - [x] Loading states
+- [ ] SSR/SEO meta tags per page (future work — currently CSR-only, no `head()` function)
 
 ---
 
@@ -137,13 +137,13 @@ Status: ✅ Complete
 
 ## Phase 6: Polish & Integration
 
-Status: ❌ Not started
+Status: 🟡 Partial
 
-- [ ] Error boundaries per app
-- [ ] Toast notifications for actions
+- [x] Error boundaries per app (`errorComponent` in each app's `__root.tsx`)
+- [x] Toast notifications for actions (employer + admin apps)
 - [ ] Responsive layout (mobile)
-- [ ] Loading skeletons
-- [ ] 404 pages
+- [x] Loading skeletons (Skeleton component in all 3 apps)
+- [x] 404 pages (`notFoundComponent` in each app's `__root.tsx`)
 - [ ] `pnpm build` passes for all apps
 - [ ] LSP diagnostics clean
 - [ ] Backend + frontend integration smoke test
@@ -152,7 +152,7 @@ Status: ❌ Not started
 
 ## Notes
 
-- **App 1 uses TanStack Start SSR** — components must avoid `window`/`localStorage` in SSR context
+- **App 1 is Vite CSR** — no SSR constraints; `window`/`localStorage` are safe to use
 - **httpOnly cookies** — each fetch must include `credentials: 'include'`
 - **CORS** — backend must list all 3 frontend origins + localhost dev ports
 - **Backend deploy** — SQLite doesn't work on Vercel serverless; need VPS or Turso

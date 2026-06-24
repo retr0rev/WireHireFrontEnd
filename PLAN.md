@@ -6,7 +6,7 @@ Three standalone frontend apps + Go backend modifications for a job board platfo
 
 | App | Stack | Subdomain | Purpose |
 |-----|-------|-----------|---------|
-| **App 1** | TanStack Start (SSR) | `public.wirehire.com` | Public job listings + employer signup |
+| **App 1** | Vite CSR | `public.wirehire.com` | Public job listings + employer signup |
 | **App 2** | Vite + CSR + TanStack Router | `employer.wirehire.com` | Employer dashboard (CRUD jobs) |
 | **App 3** | Vite + CSR + TanStack Router | `admin.wirehire.com` | Admin dashboard (moderate + manage) |
 | **Backend** | Go + Chi + SQLite | `api.wirehire.com` | API server |
@@ -54,7 +54,7 @@ Monorepo root: `/home/retr0rev/jobfront2/` (pnpm workspaces)
 - `.gitignore` for node_modules, dist, .env
 
 ### 1.2 — App skeletons
-- `apps/public/` — `npm create @tanstack/start` scaffold → SSR
+- `apps/public/` — `npm create vite` + TanStack Router + TanStack Query (CSR)
 - `apps/employer/` — `npm create vite` + TanStack Router + TanStack Query
 - `apps/admin/` — `npm create vite` + TanStack Router + TanStack Query
 - Tailwind CSS v4 setup in each app
@@ -125,7 +125,7 @@ export interface Admin {
 - `hooks/useAdmin.ts` — `useAdminJobs()`, `useUpdateJobStatus()`, `usePendingEmployers()`, `useVerifyEmployer()`
 
 ### 2.4 — Auth Utilities
-- `auth/cookie.ts` — read auth state from cookie (for SSR — check `cookies()` from TanStack Start headers)
+- `auth/cookie.ts` — read auth state from cookie (CSR: `document.cookie` access)
 - `auth/useAuth.tsx` — React context for current user
 - Handles both cookie-based and Bearer-token flows
 
@@ -135,25 +135,26 @@ export interface Admin {
 
 ---
 
-## Phase 3 — App 1: Public Job Board (SSR with TanStack Start)
+## Phase 3 — App 1: Public Job Board (CSR with Vite)
 
 ### Pages/Routes:
 
 | Route | Type | Content |
 |-------|------|---------|
-| `/` | SSR | Landing page — hero + featured jobs + search bar |
-| `/jobs` | SSR | Full job listing with category filter |
-| `/jobs/{id}` | SSR | Job detail with employer contact info |
-| `/employers` | SSR | Employer directory (companies with open jobs) |
-| `/signup` | CSR+SSR | Employer registration form |
+| `/` | CSR | Landing page — hero + featured jobs + search bar |
+| `/jobs` | CSR | Full job listing with category filter |
+| `/jobs/{id}` | CSR | Job detail with employer contact info |
+| `/employers` | CSR | Employer directory (companies with open jobs) |
+| `/signup` | CSR | Employer registration form |
 
 ### Key Behaviors:
 - **Contact info VISIBLE** — phone number and email shown on job detail
-- Search/filter by category, keyword, location (client-side filter on SSR data or TanStack Query refetch)
-- SEO: each job gets its own URL with meta tags
+- Search/filter by category, keyword, location (client-side filter via TanStack Query)
 - Signup form posts to `POST /api/auth/signup` with validation
 - Employer signup CTA on landing page ("Post jobs — Sign up as an employer")
-- Static generation where possible (job listing), CSR hydration for interactive parts
+- All pages are CSR (client-side rendered with Vite)
+
+> **Note**: SSR/SEO (server-side rendering with meta tags per page) is future work. The public app currently runs as a Vite CSR SPA.
 
 ---
 
@@ -236,7 +237,7 @@ Frontends deploy to Vercel directly (each app as a separate project).
 ├── .gitignore
 │
 ├── apps/
-│   ├── public/                  # TanStack Start SSR
+│   ├── public/                  # Vite CSR
 │   │   ├── app.config.ts
 │   │   ├── app/
 │   │   │   ├── routes/

@@ -47,7 +47,7 @@ packages/shared/src/
   auth/           — EmployerAuthProvider, AdminAuthProvider (cookie-based auth)
   constants/      — Job categories
 
-apps/public/       — Public job board (SSR)
+apps/public/       — Public job board (CSR)
 apps/employer/     — Employer dashboard (CSR)
 apps/admin/        — Admin dashboard (CSR)
 ```
@@ -64,9 +64,10 @@ No tokens are stored in JavaScript or localStorage.
 
 ## Environment Variables
 
-| Variable | Required | Default |
-|---|---|---|
-| `VITE_API_URL` | — | `http://localhost:8080` |
+| Variable | Required | Default | Description |
+|---|---|---|---|
+| `VITE_API_URL` | — | `http://localhost:8080` | Backend API URL |
+| `VITE_EMPLOYER_URL` | — | `http://localhost:5174` | URL of the employer dashboard app (for cross-app login links) |
 
 Set per-app in Vercel dashboard (or `.env` for local dev).
 
