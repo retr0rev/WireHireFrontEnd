@@ -13,12 +13,8 @@ export { JOB_CATEGORIES } from './constants/categories'
 export type { JobCategory } from './constants/categories'
 
 // Auth contexts
-export {
-  EmployerAuthProvider,
-  useEmployerAuth,
-  AdminAuthProvider,
-  useAdminAuth,
-} from './auth'
+export { UnifiedAuthProvider, useUnifiedAuth } from './auth/unified'
+export type { AuthRole, UnifiedAuthState } from './auth/unified'
 
 // Hooks — Public
 export { usePublicJobs, usePublicEmployers } from './hooks/usePublicJobs'
