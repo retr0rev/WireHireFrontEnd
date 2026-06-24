@@ -1,4 +1,4 @@
-import { createFileRoute, redirect } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import { useState, useMemo } from 'react'
 import {
   useAdminEmployers,
@@ -14,11 +14,6 @@ import toast from 'react-hot-toast'
 
 export const Route = createFileRoute('/admin/employers')({
   component: AdminEmployersPage,
-  beforeLoad: ({ context, location }) => {
-    void location
-    if (context.auth.role !== 'admin') throw redirect({ to: '/login' })
-    if (context.auth.admin?.admin_role !== 'super_admin') throw redirect({ to: '/admin' })
-  },
 })
 
 function AdminEmployersPage() {

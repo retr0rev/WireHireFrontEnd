@@ -17,6 +17,10 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
   }
 
   if (!user && !admin) {
+    // Not authenticated — redirect to login. We use window.location here
+    // instead of the router so this works even when the router context hasn't
+    // caught up with the auth state yet.
+    window.location.href = '/login'
     return null
   }
 

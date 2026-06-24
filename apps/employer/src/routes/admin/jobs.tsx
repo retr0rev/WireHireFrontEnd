@@ -1,4 +1,4 @@
-import { createFileRoute, redirect } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
 import { useAdminJobs, useUpdateJobStatus, useAdminDeleteJob } from '@wirehire/shared'
 import { AuthLayout } from '../../components/AuthLayout'
@@ -8,10 +8,6 @@ import toast from 'react-hot-toast'
 
 export const Route = createFileRoute('/admin/jobs')({
   component: AdminJobsPage,
-  beforeLoad: ({ context, location }) => {
-    void location
-    if (context.auth.role !== 'admin') throw redirect({ to: '/login' })
-  },
 })
 
 const tabs: (JobStatus | 'all')[] = ['all', 'pending', 'approved', 'rejected']

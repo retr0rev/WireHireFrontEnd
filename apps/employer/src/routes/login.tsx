@@ -1,5 +1,5 @@
-import { createFileRoute, useRouter } from '@tanstack/react-router'
-import { useState } from 'react'
+import { createFileRoute } from '@tanstack/react-router'
+import { useEffect, useState } from 'react'
 import { useUnifiedAuth } from '@wirehire/shared'
 
 export const Route = createFileRoute('/login')({
@@ -7,12 +7,20 @@ export const Route = createFileRoute('/login')({
 })
 
 function LoginPage() {
-  const { login } = useUnifiedAuth()
-  const router = useRouter()
+  const { login, user, admin, isLoading } = useUnifiedAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+
+  // If already authenticated on mount (refresh with valid cookie), redirect.
+  // We skip the isLoading check here — if user/admin is set, we're authenticated
+  // regardless of whether the initial probe finished. The probe might still be
+  // running (waiting for 401s) while we already have a valid session from login().
+  useEffect(() => {
+    if (user) window.location.href = '/'
+    else if (admin) window.location.href = '/admin'
+  }, [user, admin])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -20,7 +28,8 @@ function LoginPage() {
     setError('')
     try {
       const { role } = await login(email, password)
-      router.navigate({ to: role === 'admin' ? '/admin' : '/' })
+      // Full page redirect via window.location — bypasses router context staleness.
+      window.location.href = role === 'admin' ? '/admin' : '/'
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Invalid email or password')
     } finally {

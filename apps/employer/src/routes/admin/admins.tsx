@@ -1,4 +1,4 @@
-import { createFileRoute, redirect } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
 import { useAdminList, useCreateAdmin } from '@wirehire/shared'
 import type { AdminRole } from '@wirehire/shared'
@@ -8,11 +8,6 @@ import toast from 'react-hot-toast'
 
 export const Route = createFileRoute('/admin/admins')({
   component: AdminAdminsPage,
-  beforeLoad: ({ context, location }) => {
-    void location
-    if (context.auth.role !== 'admin') throw redirect({ to: '/login' })
-    if (context.auth.admin?.admin_role !== 'super_admin') throw redirect({ to: '/admin' as const })
-  },
 })
 
 function AdminAdminsPage() {
