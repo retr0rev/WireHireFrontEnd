@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import { useState } from 'react'
-import { useEmployerAuth, apiFetch, API_PATHS } from '@wirehire/shared'
+import { useEmployerAuth, apiFetch, API_PATHS, ImageUpload } from '@wirehire/shared'
 import type { Client } from '@wirehire/shared'
 import { AuthLayout } from '../components/AuthLayout'
 
@@ -78,12 +78,11 @@ function ProfilePage() {
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">Logo URL</label>
-            <input
-              name="company_logo_url"
-              value={form.company_logo_url}
-              onChange={handleChange}
-              className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-gray-500 focus:outline-none"
+            <ImageUpload
+              type="logo"
+              currentUrl={form.company_logo_url}
+              onUpload={(url) => setForm((prev) => ({ ...prev, company_logo_url: url }))}
+              label="Company Logo"
             />
           </div>
           <div>

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { JOB_CATEGORIES } from '@wirehire/shared'
+import { JOB_CATEGORIES, ImageUpload } from '@wirehire/shared'
 import type { CreateJobRequest } from '@wirehire/shared'
 
 interface JobFormProps {
@@ -10,7 +10,7 @@ interface JobFormProps {
 
 export function JobForm({ initial, onSubmit, submitLabel }: JobFormProps) {
   const [form, setForm] = useState<CreateJobRequest>(
-    initial ?? { job_title: '', description: '', category: '', location: '' },
+    initial ?? { job_title: '', description: '', category: '', location: '', banner_image_url: '' },
   )
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
@@ -100,6 +100,15 @@ export function JobForm({ initial, onSubmit, submitLabel }: JobFormProps) {
             className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-gray-500 focus:outline-none"
           />
         </div>
+      </div>
+
+      <div>
+        <ImageUpload
+          type="banner"
+          currentUrl={form.banner_image_url}
+          onUpload={(url) => setForm((prev) => ({ ...prev, banner_image_url: url }))}
+          label="Banner Image"
+        />
       </div>
 
       {error && <p className="text-sm text-red-600">{error}</p>}

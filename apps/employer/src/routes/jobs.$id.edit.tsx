@@ -57,6 +57,7 @@ function EditJobPage() {
             description: job.description,
             category: job.category,
             location: job.location,
+            banner_image_url: job.banner_image_url,
           }}
           onSubmit={handleSubmit}
           submitLabel="Save Changes"
