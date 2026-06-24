@@ -1,7 +1,10 @@
+// In production, VITE_API_URL points to the backend origin (set by Vercel).
+// In development, it's unset, so requests go to the same origin and are
+// proxied by Vite (vite.config.ts server.proxy) to localhost:8080.
 const BASE_URL =
   window.ENV?.VITE_API_URL ??
   import.meta.env.VITE_API_URL ??
-  'http://localhost:8080'
+  ''
 
 /** Read a cookie value by name. */
 function getCookie(name: string): string | undefined {
