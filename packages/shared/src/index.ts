@@ -5,6 +5,9 @@ export * from './types'
 export { apiFetch, ApiFetchError } from './api/client'
 export { API_PATHS } from './api/paths'
 
+// Components
+export { ImageUpload } from './components/ImageUpload'
+
 // Constants
 export { JOB_CATEGORIES } from './constants/categories'
 export type { JobCategory } from './constants/categories'

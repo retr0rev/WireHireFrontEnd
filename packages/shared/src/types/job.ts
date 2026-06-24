@@ -14,6 +14,7 @@ export interface JobApp {
   company_website: string
   company_logo_url: string
   company_bio: string
+  banner_image_url: string
 }
 
 export interface CreateJobRequest {
@@ -21,6 +22,7 @@ export interface CreateJobRequest {
   description: string
   category: string
   location: string
+  banner_image_url?: string
 }
 
 export interface UpdateJobRequest {
@@ -28,6 +30,7 @@ export interface UpdateJobRequest {
   description?: string
   category?: string
   location?: string
+  banner_image_url?: string
 }
 
 export interface UpdateJobStatusRequest {

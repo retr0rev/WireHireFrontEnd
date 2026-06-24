@@ -13,6 +13,9 @@ export const API_PATHS = {
   authResetPassword: '/api/auth/reset-password',
   authMe: '/api/auth/me',
 
+  // Upload
+  uploadUrl: '/api/auth/upload-url',
+
   // Jobs (employer) - scoped to authenticated client
   jobs: '/api/jobs',
   job: (id: number) => `/api/jobs/${id}`,
