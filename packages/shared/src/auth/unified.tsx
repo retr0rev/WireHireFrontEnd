@@ -10,6 +10,18 @@ import { apiFetch } from '../api/client'
 import { API_PATHS } from '../api/paths'
 import type { Admin, Client } from '../types'
 
+/** Fetch a CSRF token from the backend to prime the csrf cookie. */
+async function fetchCSRFToken(): Promise<void> {
+  // GET /api/auth/csrf sets the csrf cookie (non-HttpOnly, SameSite=None).
+  // The apiFetch call adds nothing for GET — the cookie is set by the response.
+  try {
+    await apiFetch<{ csrf_token: string }>('/api/auth/csrf')
+    // The cookie is set via Set-Cookie on the response.
+  } catch {
+    // Silent — the probe failures are OK; login will fail with a clear error.
+  }
+}
+
 // ─── Unified Auth Context ───────────────────────────────────────────
 
 export type AuthRole = 'employer' | 'admin'
@@ -19,6 +31,7 @@ export interface UnifiedAuthState {
   user: Client | null
   admin: Admin | null
   isLoading: boolean
+  login: (email: string, password: string) => Promise<{ role: AuthRole }>
   loginAsEmployer: (email: string, password: string) => Promise<Client>
   loginAsAdmin: (email: string, password: string) => Promise<Admin>
   logout: () => Promise<void>
@@ -65,7 +78,37 @@ export function UnifiedAuthProvider({ children }: { children: React.ReactNode })
     }
   }, [])
 
+  const login = useCallback(async (email: string, password: string) => {
+    // Prime the CSRF cookie so apiFetch can read it and attach X-CSRF-Token.
+    await fetchCSRFToken()
+
+    // Try employer first, fall back to admin.
+    try {
+      await apiFetch(API_PATHS.authLogin, {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
+      })
+      const profile = await apiFetch<Client>(API_PATHS.authMe)
+      setRole('employer')
+      setUser(profile)
+      setAdmin(null)
+      return { role: 'employer' as const }
+    } catch {
+      // Employer failed — try admin.
+      await apiFetch(API_PATHS.adminLogin, {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
+      })
+      const profile = await apiFetch<Admin>(API_PATHS.adminMe)
+      setRole('admin')
+      setAdmin(profile)
+      setUser(null)
+      return { role: 'admin' as const }
+    }
+  }, [])
+
   const loginAsEmployer = useCallback(async (email: string, password: string) => {
+    await fetchCSRFToken()
     await apiFetch(API_PATHS.authLogin, {
       method: 'POST',
       body: JSON.stringify({ email, password }),
@@ -78,6 +121,7 @@ export function UnifiedAuthProvider({ children }: { children: React.ReactNode })
   }, [])
 
   const loginAsAdmin = useCallback(async (email: string, password: string) => {
+    await fetchCSRFToken()
     await apiFetch(API_PATHS.adminLogin, {
       method: 'POST',
       body: JSON.stringify({ email, password }),
@@ -103,7 +147,7 @@ export function UnifiedAuthProvider({ children }: { children: React.ReactNode })
 
   return (
     <UnifiedAuthContext.Provider
-      value={{ role, user, admin, isLoading, loginAsEmployer, loginAsAdmin, logout }}
+      value={{ role, user, admin, isLoading, login, loginAsEmployer, loginAsAdmin, logout }}
     >
       {children}
     </UnifiedAuthContext.Provider>
