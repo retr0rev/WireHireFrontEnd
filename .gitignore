@@ -21,3 +21,9 @@ dist
 .omo/
 .codegraph
 *timestamp*.js
+
+# Database files (copied from backend for frontend use)
+database/
+*.db
+*.db-shm
+*.db-wal
