@@ -27,3 +27,6 @@ database/
 *.db
 *.db-shm
 *.db-wal
+
+# Local uploads (dev only)
+uploads/
