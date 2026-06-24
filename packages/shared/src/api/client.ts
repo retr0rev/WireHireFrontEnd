@@ -3,11 +3,19 @@ const BASE_URL =
   import.meta.env.VITE_API_URL ??
   'http://localhost:8080'
 
+/** Read a cookie value by name. */
+function getCookie(name: string): string | undefined {
+  if (typeof document === 'undefined') return undefined
+  const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`))
+  return match ? decodeURIComponent(match[1]) : undefined
+}
+
 /**
  * Lightweight fetch wrapper that:
  * - Prepends the API base URL
  * - Sends cookies (httpOnly JWT) via credentials: 'include'
  * - Lets the backend set/clear the cookie on login/logout
+ * - Adds X-CSRF-Token header on state-changing methods for CSRF protection
  * - Throws on non-2xx with parsed error body
  * - Allows overriding Content-Type for form/multipart
  */
@@ -24,6 +32,15 @@ export async function apiFetch<T>(
   // Default JSON — let fetch set Content-Type automatically for body-less requests
   if (!headers['Content-Type'] && options.body) {
     headers['Content-Type'] = 'application/json'
+  }
+
+  // CSRF: add X-CSRF-Token for state-changing methods.
+  const method = (options.method ?? 'GET').toUpperCase()
+  if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
+    const csrfToken = getCookie('csrf')
+    if (csrfToken) {
+      headers['X-CSRF-Token'] = csrfToken
+    }
   }
 
   const res = await fetch(url, {
