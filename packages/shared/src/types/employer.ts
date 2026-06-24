@@ -36,7 +36,6 @@ export interface AuthResponse {
 export interface EmployerCreateResponse {
   client: Client
   temporary: boolean
-  raw_password?: string
 }
 
 export interface CreateEmployerRequest {
