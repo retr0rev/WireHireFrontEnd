@@ -62,9 +62,10 @@ export async function apiFetch<T>(
   }
 
   if (!res.ok) {
+    const body = data as Record<string, unknown>
     const errMsg =
-      typeof (data as any)?.error === 'string'
-        ? (data as any).error
+      typeof body?.error === 'string'
+        ? body.error
         : `HTTP ${res.status}`
     throw new ApiFetchError(res.status, errMsg, data)
   }

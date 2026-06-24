@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
 // Mock window for BASE_URL before importing apiFetch.
-const mockWindow = { ENV: { VITE_API_URL: 'http://test-api.local' } } as any
+const mockWindow: Record<string, unknown> = { ENV: { VITE_API_URL: 'http://test-api.local' } }
 vi.stubGlobal('window', mockWindow)
 
 // Re-import with the mock applied.
