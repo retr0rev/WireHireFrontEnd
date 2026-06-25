@@ -1,6 +1,6 @@
 {
   "installCommand": "cd ../.. && pnpm install --frozen-lockfile",
-  "buildCommand": "cd ../.. && pnpm --filter @wirehire/employer build",
+  "buildCommand": "cd ../.. && pnpm --filter @wirehire/dashboard build",
   "outputDirectory": "dist",
   "framework": "vite",
   "rewrites": [
