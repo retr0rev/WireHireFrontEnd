@@ -10,13 +10,27 @@ import { apiFetch } from '../api/client'
 import { API_PATHS } from '../api/paths'
 import type { Admin, Client } from '../types'
 
-/** Fetch a CSRF token from the backend to prime the csrf cookie. */
+// In-memory CSRF token store (cross-origin: cookie not readable by JS)
+let csrfTokenStore: string | null = null
+
+function setCSRFToken(token: string) {
+  csrfTokenStore = token
+}
+
+function getCSRFToken(): string | null {
+  return csrfTokenStore
+}
+
+/** Exported for apiFetch to read CSRF token from memory (cross-origin). */
+export { getCSRFToken }
+
+/** Fetch a CSRF token from the backend and store it in memory. */
 async function fetchCSRFToken(): Promise<void> {
-  // GET /api/auth/csrf sets the csrf cookie (non-HttpOnly, SameSite=None).
-  // The apiFetch call adds nothing for GET — the cookie is set by the response.
   try {
-    await apiFetch<{ csrf_token: string }>('/api/auth/csrf')
-    // The cookie is set via Set-Cookie on the response.
+    const res = await apiFetch<{ csrf_token: string }>('/api/auth/csrf')
+    if (res?.csrf_token) {
+      setCSRFToken(res.csrf_token)
+    }
   } catch {
     // Silent — the probe failures are OK; login will fail with a clear error.
   }

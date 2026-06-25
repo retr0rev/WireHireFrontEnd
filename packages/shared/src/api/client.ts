@@ -6,11 +6,25 @@ const BASE_URL =
   import.meta.env.VITE_API_URL ??
   ''
 
-/** Read a cookie value by name. */
+/** Read a cookie value by name (same-origin only). */
 export function getCookie(name: string): string | undefined {
   if (typeof document === 'undefined') return undefined
   const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`))
   return match ? decodeURIComponent(match[1]) : undefined
+}
+
+// Import CSRF getter from auth module (avoids circular deps via lazy import)
+let getCSRFTokenFn: (() => string | null) | null = null
+
+async function getCSRFToken(): Promise<string | null> {
+  if (getCSRFTokenFn) return getCSRFTokenFn()
+  try {
+    const mod = await import('../auth/unified')
+    getCSRFTokenFn = mod.getCSRFToken
+    return getCSRFTokenFn()
+  } catch {
+    return null
+  }
 }
 
 /**
@@ -40,7 +54,7 @@ export async function apiFetch<T>(
   // CSRF: add X-CSRF-Token for state-changing methods.
   const method = (options.method ?? 'GET').toUpperCase()
   if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
-    const csrfToken = getCookie('csrf')
+    const csrfToken = await getCSRFToken()
     if (csrfToken) {
       headers['X-CSRF-Token'] = csrfToken
     }
