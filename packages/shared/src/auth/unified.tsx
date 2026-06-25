@@ -6,23 +6,9 @@ import React, {
   useEffect,
   useRef,
 } from 'react'
-import { apiFetch } from '../api/client'
+import { apiFetch, setCSRFToken } from '../api/client'
 import { API_PATHS } from '../api/paths'
 import type { Admin, Client } from '../types'
-
-// In-memory CSRF token store (cross-origin: cookie not readable by JS)
-let csrfTokenStore: string | null = null
-
-function setCSRFToken(token: string) {
-  csrfTokenStore = token
-}
-
-function getCSRFToken(): string | null {
-  return csrfTokenStore
-}
-
-/** Exported for apiFetch to read CSRF token from memory (cross-origin). */
-export { getCSRFToken }
 
 /** Fetch a CSRF token from the backend and store it in memory. */
 async function fetchCSRFToken(): Promise<void> {

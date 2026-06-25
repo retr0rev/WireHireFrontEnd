@@ -13,18 +13,33 @@ export function getCookie(name: string): string | undefined {
   return match ? decodeURIComponent(match[1]) : undefined
 }
 
-// Import CSRF getter from auth module (avoids circular deps via lazy import)
-let getCSRFTokenFn: (() => string | null) | null = null
+// In-memory CSRF token (populated by fetchCSRFToken from response body)
+let csrfTokenStore: string | null = null
 
-async function getCSRFToken(): Promise<string | null> {
-  if (getCSRFTokenFn) return getCSRFTokenFn()
+export function setCSRFToken(token: string) {
+  csrfTokenStore = token
+}
+
+export function getCSRFTokenStore(): string | null {
+  return csrfTokenStore
+}
+
+// Fetch CSRF token from backend if not in memory
+async function fetchCSRFTokenIfNeeded(): Promise<string | null> {
+  if (csrfTokenStore) return csrfTokenStore
   try {
-    const mod = await import('../auth/unified')
-    getCSRFTokenFn = mod.getCSRFToken
-    return getCSRFTokenFn()
-  } catch {
-    return null
-  }
+    const res = await fetch(`${BASE_URL}/api/auth/csrf`, {
+      credentials: 'include',
+    })
+    if (res.ok) {
+      const data = await res.json()
+      if (data.csrf_token) {
+        csrfTokenStore = data.csrf_token
+        return csrfTokenStore
+      }
+    }
+  } catch {}
+  return null
 }
 
 /**
@@ -54,7 +69,7 @@ export async function apiFetch<T>(
   // CSRF: add X-CSRF-Token for state-changing methods.
   const method = (options.method ?? 'GET').toUpperCase()
   if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
-    const csrfToken = await getCSRFToken()
+    const csrfToken = await fetchCSRFTokenIfNeeded()
     if (csrfToken) {
       headers['X-CSRF-Token'] = csrfToken
     }
