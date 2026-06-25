@@ -113,19 +113,7 @@ export function UnifiedAuthProvider({ children }: { children: React.ReactNode })
     // Prime the CSRF cookie so apiFetch can read it and attach X-CSRF-Token.
     await fetchCSRFToken()
 
-    // Try employer first, fall back to admin.
     try {
-      await apiFetch(API_PATHS.authLogin, {
-        method: 'POST',
-        body: JSON.stringify({ email, password }),
-      })
-      const profile = await apiFetch<Client>(API_PATHS.authMe)
-      setRole('employer')
-      setUser(profile)
-      setAdmin(null)
-      return { role: 'employer' as const }
-    } catch {
-      // Employer failed — try admin.
       await apiFetch(API_PATHS.adminLogin, {
         method: 'POST',
         body: JSON.stringify({ email, password }),
@@ -135,6 +123,17 @@ export function UnifiedAuthProvider({ children }: { children: React.ReactNode })
       setAdmin(profile)
       setUser(null)
       return { role: 'admin' as const }
+    } catch {
+
+      await apiFetch(API_PATHS.authLogin, {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
+      })
+      const profile = await apiFetch<Client>(API_PATHS.authMe)
+      setRole('employer')
+      setUser(profile)
+      setAdmin(null)
+      return { role: 'employer' as const }
     }
   }, [])
 
