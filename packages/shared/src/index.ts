@@ -2,7 +2,7 @@
 export * from './types'
 
 // API
-export { apiFetch, ApiFetchError } from './api/client'
+export { apiFetch, ApiFetchError, getCookie } from './api/client'
 export { API_PATHS } from './api/paths'
 
 // Components

@@ -47,7 +47,7 @@ function DashboardPage() {
               key={job.id}
               className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-5"
             >
-              <div className="flex items-start gap-4 flex-1">
+              <Link to="/jobs/$id" params={{ id: String(job.id) }} className="flex items-start gap-4 flex-1 group">
                 {job.banner_image_url && (
                   <img
                     src={job.banner_image_url}
@@ -66,14 +66,14 @@ function DashboardPage() {
                         onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
                       />
                     )}
-                    <h2 className="font-semibold text-gray-900 truncate">{job.job_title}</h2>
+                    <h2 className="font-semibold text-gray-900 truncate group-hover:text-blue-600">{job.job_title}</h2>
                     <StatusBadge status={job.status} />
                   </div>
                   <p className="text-sm text-gray-500">
                     {job.category} &middot; {job.location}
                   </p>
                 </div>
-              </div>
+              </Link>
               <div className="flex items-center gap-2">
                 <Link
                   to="/jobs/$id/edit"

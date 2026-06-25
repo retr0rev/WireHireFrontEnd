@@ -55,4 +55,5 @@ export interface UpdateEmployerRequest {
   company_bio?: string
   phone?: string
   email?: string
+  password?: string
 }

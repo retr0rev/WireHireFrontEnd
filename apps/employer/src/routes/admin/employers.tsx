@@ -8,6 +8,7 @@ import {
 } from '@wirehire/shared'
 import type { CreateEmployerRequest } from '@wirehire/shared'
 import type { Client } from '@wirehire/shared'
+import { getCookie } from '@wirehire/shared'
 import { AuthLayout } from '../../components/AuthLayout'
 import { TableSkeleton } from '../../components/Skeleton'
 import toast from 'react-hot-toast'
@@ -155,6 +156,8 @@ function EmployerCard({
 }) {
   const update = useUpdateEmployer(employer.id)
   const [saving, setSaving] = useState(false)
+  const [logoUploading, setLogoUploading] = useState(false)
+  const [logoError, setLogoError] = useState('')
   const [editForm, setEditForm] = useState({
     company_name: employer.company_name,
     email: employer.email,
@@ -162,6 +165,7 @@ function EmployerCard({
     company_website: employer.company_website ?? '',
     company_logo_url: employer.company_logo_url ?? '',
     company_bio: employer.company_bio ?? '',
+    password: '',
   })
 
   const handleSave = async () => {
@@ -174,13 +178,57 @@ function EmployerCard({
         company_website: editForm.company_website || undefined,
         company_logo_url: editForm.company_logo_url || undefined,
         company_bio: editForm.company_bio || undefined,
+        password: editForm.password || undefined,
       })
       toast.success('Employer updated')
       onSaved()
+      setEditForm((prev) => ({ ...prev, password: '' }))
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Update failed')
     } finally {
       setSaving(false)
+    }
+  }
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setLogoError('')
+
+    if (!['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml'].includes(file.type)) {
+      setLogoError('Unsupported file type. Allowed: PNG, JPEG, WebP, SVG.')
+      return
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setLogoError('File too large. Maximum size is 5 MB.')
+      return
+    }
+
+    setLogoUploading(true)
+    try {
+      const csrfToken = getCookie('csrf')
+      const headers: Record<string, string> = { 'Content-Type': file.type }
+      if (csrfToken) headers['X-CSRF-Token'] = csrfToken
+
+      const res = await fetch('/api/admin/upload', {
+        method: 'PUT',
+        body: file,
+        headers,
+      })
+
+      if (!res.ok) {
+        const err = await res.text()
+        throw new Error(err ? JSON.parse(err).error || 'Upload failed' : 'Upload failed')
+      }
+
+      const data = await res.json()
+      setEditForm((prev) => ({ ...prev, company_logo_url: data.public_url }))
+    } catch (err) {
+      setLogoError(err instanceof Error ? err.message : 'Upload failed')
+    } finally {
+      setLogoUploading(false)
+      if (e.target) e.target.value = ''
     }
   }
 
@@ -204,11 +252,41 @@ function EmployerCard({
             <label className="mb-1 block text-xs font-medium text-gray-500">Website</label>
             <input value={editForm.company_website} onChange={(e) => setEditForm({ ...editForm, company_website: e.target.value })} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none" />
           </div>
-          <div>
-            <label className="mb-1 block text-xs font-medium text-gray-500">Logo URL</label>
-            <input value={editForm.company_logo_url} onChange={(e) => setEditForm({ ...editForm, company_logo_url: e.target.value })} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none" />
+          <div className="col-span-2">
+            <label className="mb-1 block text-xs font-medium text-gray-500">Company Logo</label>
+            <div className="flex flex-wrap items-center gap-4">
+              {editForm.company_logo_url && (
+                <img
+                  src={editForm.company_logo_url}
+                  alt="Logo preview"
+                  className="h-14 w-14 rounded-lg border border-gray-200 object-cover"
+                  onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
+                />
+              )}
+              <div className="flex-1 space-y-2">
+                <input
+                  type="file"
+                  accept=".png,.jpg,.jpeg,.webp,.svg"
+                  onChange={handleLogoUpload}
+                  disabled={logoUploading}
+                  className="block w-full text-sm text-gray-500 file:mr-3 file:rounded-lg file:border-0 file:bg-gray-100 file:px-4 file:py-2 file:text-sm file:font-medium file:text-gray-700 hover:file:bg-gray-200 disabled:opacity-50"
+                />
+                {logoUploading && <span className="text-xs text-gray-500">Uploading...</span>}
+                {logoError && <p className="text-xs text-red-600">{logoError}</p>}
+              </div>
+            </div>
+            <input
+              type="text"
+              placeholder="Or paste logo URL..."
+              value={editForm.company_logo_url}
+              onChange={(e) => setEditForm({ ...editForm, company_logo_url: e.target.value })}
+              className="mt-2 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+            />
           </div>
-          <div />
+          <div>
+            <label className="mb-1 block text-xs font-medium text-gray-500">New Password (leave blank to keep current)</label>
+            <input type="password" placeholder="New password" value={editForm.password} onChange={(e) => setEditForm({ ...editForm, password: e.target.value })} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none" />
+          </div>
           <div className="col-span-2">
             <label className="mb-1 block text-xs font-medium text-gray-500">Bio</label>
             <textarea rows={3} value={editForm.company_bio} onChange={(e) => setEditForm({ ...editForm, company_bio: e.target.value })} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none" />

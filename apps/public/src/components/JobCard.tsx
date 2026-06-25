@@ -6,8 +6,19 @@ interface JobCardProps { job: JobApp }
 export function JobCard({ job }: JobCardProps) {
   return (
     <Link to="/jobs/$id" params={{ id: String(job.id) }}
-      className="block rounded-wh-card border border-wh-outline bg-wh-white p-6 transition hover:border-wh-outline-hover hover:bg-wh-surface">
-      <div className="mb-4 flex items-start justify-between gap-3">
+      className="group block rounded-wh-card border border-wh-outline bg-wh-white transition hover:border-wh-outline-hover hover:bg-wh-surface">
+      {job.banner_image_url && (
+        <div className="overflow-hidden rounded-t-wh-card">
+          <img
+            src={job.banner_image_url}
+            alt=""
+            className="h-32 w-full object-cover transition group-hover:scale-105"
+            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
+          />
+        </div>
+      )}
+      <div className="p-6">
+        <div className="mb-4 flex items-start justify-between gap-3">
         <div className="flex items-start gap-3">
           {job.company_logo_url ? (
             <img src={job.company_logo_url} alt={job.company_name} className="h-10 w-10 rounded-wh-card object-cover" />
@@ -43,6 +54,7 @@ export function JobCard({ job }: JobCardProps) {
             {job.company_website}
           </span>
         )}
+      </div>
       </div>
     </Link>
   )
