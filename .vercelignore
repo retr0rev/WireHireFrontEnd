@@ -1,0 +1,19 @@
+# Ignore heavy files
+node_modules
+.pnpm-store
+.turbo
+*.log
+.env
+.env.local
+.env.*.local
+.DS_Store
+*.tsbuildinfo
+
+# Ignore source maps in production
+**/*.map
+
+# Ignore test files
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
